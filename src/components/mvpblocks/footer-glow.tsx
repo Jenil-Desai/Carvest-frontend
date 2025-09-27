@@ -6,7 +6,9 @@ import { Button } from "../ui/button";
 export default function FooterGlow() {
   return (
     <footer className="relative z-10 mt-8 w-full overflow-hidden pt-16 pb-8">
-      <style>{`
+      {/* {
+      @ts-ignore} */}
+      <style jsx global>{`
         .glass {
           backdrop-filter: blur(3px) saturate(180%);
           background: radial-gradient(circle, #fff9 0%, #ffdce64d 60%, #f9f2f4 100%);
