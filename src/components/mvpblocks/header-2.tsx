@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, easeInOut } from 'framer-motion';
 import { Menu, X, ArrowRight, Zap, Search, Coins } from 'lucide-react';
 import { NavLink } from 'react-router';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 interface NavItem {
   name: string;
@@ -155,24 +156,11 @@ export default function Header2() {
                 <Search className="h-5 w-5" />
               </motion.button>
 
-              <NavLink
-                to="/login"
-                className="text-foreground/80 hover:text-foreground px-4 py-2 text-sm font-medium transition-colors duration-200"
-              >
-                Sign In
-              </NavLink>
-
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <NavLink
-                  to="/signup"
-                  className="bg-foreground text-background hover:bg-foreground/90 inline-flex items-center space-x-2 rounded-lg px-5 py-2.5 text-sm font-medium shadow-sm transition-all duration-200"
-                >
-                  <span>Get Started</span>
-                  <ArrowRight className="h-4 w-4" />
-                </NavLink>
+                <ConnectButton chainStatus={"icon"} accountStatus={"avatar"} showBalance={true} />
               </motion.div>
             </motion.div>
 
@@ -225,23 +213,10 @@ export default function Header2() {
                 </div>
 
                 <motion.div
-                  className="border-border space-y-3 border-t pt-6"
+                  className="border-border space-y-3 border-t pt-6 flex justify-center items-center"
                   variants={mobileItemVariants}
                 >
-                  <NavLink
-                    to="/login"
-                    className="text-foreground hover:bg-muted block w-full rounded-lg py-3 text-center font-medium transition-colors duration-200"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Sign In
-                  </NavLink>
-                  <NavLink
-                    to="/signup"
-                    className="bg-foreground text-background hover:bg-foreground/90 block w-full rounded-lg py-3 text-center font-medium transition-all duration-200"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Get Started
-                  </NavLink>
+                  <ConnectButton chainStatus={"icon"} accountStatus={"avatar"} showBalance={true} />
                 </motion.div>
               </div>
             </motion.div>
