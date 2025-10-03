@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, easeInOut } from 'framer-motion';
 import { Menu, X, ArrowRight, Zap, Search, Coins } from 'lucide-react';
-import { NavLink } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { CampaignFormDialog } from '@/components/global/CampaignFormDialog';
 
 interface NavItem {
   name: string;
@@ -13,8 +14,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { name: 'Home', href: '/' },
-  { name: 'Campaings', href: '/campaigns' },
-  { name: 'Contact', href: '/contact' },
+  { name: 'Campaigns', href: '/campaigns' },
+  { name: 'My Campaigns', href: '/campaigns/my' },
 ];
 
 export default function Header2() {
@@ -148,13 +149,17 @@ export default function Header2() {
               className="hidden items-center space-x-3 lg:flex"
               variants={itemVariants}
             >
-              <motion.button
-                className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg p-2 transition-colors duration-200"
+              <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Search className="h-5 w-5" />
-              </motion.button>
+                <CampaignFormDialog>
+                  <div className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-rose-500 via-rose-600 to-rose-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-200 hover:shadow-xl cursor-pointer">
+                    <Zap className="h-4 w-4" />
+                    <span>Create Campaign</span>
+                  </div>
+                </CampaignFormDialog>
+              </motion.div>
 
               <motion.div
                 whileHover={{ scale: 1.02 }}
@@ -213,10 +218,22 @@ export default function Header2() {
                 </div>
 
                 <motion.div
-                  className="border-border space-y-3 border-t pt-6 flex justify-center items-center"
+                  className="border-border border-t pt-6 space-y-4"
                   variants={mobileItemVariants}
                 >
-                  <ConnectButton chainStatus={"icon"} accountStatus={"avatar"} showBalance={true} />
+                  <CampaignFormDialog>
+                    <div
+                      className="bg-primary hover:bg-primary/90 w-full flex items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white transition-colors duration-200 cursor-pointer"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Zap className="h-5 w-5" />
+                      Create Campaign
+                    </div>
+                  </CampaignFormDialog>
+
+                  <div className="flex justify-center">
+                    <ConnectButton chainStatus={"icon"} accountStatus={"avatar"} showBalance={true} />
+                  </div>
                 </motion.div>
               </div>
             </motion.div>

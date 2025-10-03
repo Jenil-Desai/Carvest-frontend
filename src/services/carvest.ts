@@ -22,25 +22,35 @@ export interface Campaign {
  */
 export class CravestService {
   private provider: ethers.JsonRpcProvider;
-  private signer: ethers.Wallet;
+  private signer: ethers.Signer;
   private contract: ethers.Contract;
 
   /**
    * Creates an instance of CravestService.
    * @param {string} [customProviderUrl] - Optional custom provider URL
-   * @param {string} [customPrivateKey] - Optional custom private key
+   * @param {ethers.Signer} [customSigner] - Optional custom signer
    * @param {string} [customContractAddress] - Optional custom contract address
    */
   constructor(
     customProviderUrl?: string,
-    customPrivateKey?: string,
+    customSigner?: ethers.Signer,
     customContractAddress?: string
   ) {
+    // Initialize with default provider
     this.provider = new ethers.JsonRpcProvider(customProviderUrl || import.meta.env.VITE_ALCHEMY_URL);
-    this.signer = new ethers.Wallet(
-      customPrivateKey || "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
-      this.provider
-    );
+
+    // Use provided signer or create a default one (only for read operations)
+    if (customSigner) {
+      this.signer = customSigner;
+    } else {
+      // Default signer is only useful for read operations or development
+      this.signer = new ethers.Wallet(
+        "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
+        this.provider
+      );
+    }
+
+    // Initialize the contract
     this.contract = new ethers.Contract(
       customContractAddress || import.meta.env.VITE_CONTRACT_ADDRESS,
       contractABI.abi,
@@ -50,15 +60,55 @@ export class CravestService {
 
   /**
    * Set a new signer (wallet) for transactions
-   * @param {string} privateKey - The private key for the new signer
+   * @param {ethers.Signer} signer - The signer to use for transactions
    */
-  setSigner(privateKey: string): void {
-    this.signer = new ethers.Wallet(privateKey, this.provider);
+  setSigner(signer: ethers.Signer): void {
+    this.signer = signer;
     this.contract = new ethers.Contract(
       this.contract.target,
       contractABI.abi,
       this.signer
     );
+  }
+
+  /**
+   * Get the current network information
+   * @returns {Promise<{name: string, chainId: bigint}>} Network information
+   */
+  async getNetworkInfo(): Promise<{ name: string, chainId: bigint }> {
+    const network = await this.provider.getNetwork();
+    return {
+      name: network.name,
+      chainId: network.chainId
+    };
+  }
+
+  /**
+   * Connect to a browser wallet using ethers BrowserProvider
+   * This method should be called when using the service with a browser wallet
+   * @returns {Promise<void>}
+   */
+  async connectBrowserWallet(): Promise<void> {
+    try {
+      // Check if window.ethereum is available
+      if (window.ethereum) {
+        // Create a browser provider
+        const browserProvider = new ethers.BrowserProvider(window.ethereum);
+
+        // Get the signer from the browser provider
+        const signer = await browserProvider.getSigner();
+
+        // Update the service with the new signer
+        this.setSigner(signer);
+
+        return Promise.resolve();
+      } else {
+        return Promise.reject(new Error("No Ethereum browser extension detected"));
+      }
+    } catch (error) {
+      console.error("Failed to connect browser wallet:", error);
+      return Promise.reject(error);
+    }
   }
 
   /**
@@ -72,10 +122,32 @@ export class CravestService {
   async createCampaign(
     name: string,
     description: string,
-    goal: number,
+    goal: BigInt,
     deadline: number
   ): Promise<ethers.ContractTransactionResponse> {
-    return await this.contract.createCampaign(name, description, goal, deadline);
+    try {
+      // Send the transaction with explicit gas configuration
+      return await this.contract.createCampaign(
+        name,
+        description,
+        goal,
+        deadline
+      );
+    } catch (error) {
+      console.error("Error in createCampaign:", error);
+
+      // Check if this is a gas estimation error
+      if (error instanceof Error && error.message.includes("gas")) {
+        throw new Error("Transaction would fail: The contract function may revert. Check your inputs.");
+      }
+
+      // Check for other common errors
+      if (error instanceof Error && error.message.includes("insufficient funds")) {
+        throw new Error("Insufficient funds: You don't have enough ETH to complete this transaction.");
+      }
+
+      throw error;
+    }
   }
 
   /**
@@ -115,15 +187,15 @@ export class CravestService {
 
   /**
    * Get all campaigns
-   * @returns {Promise<Campaign[]>} Array of all campaigns
+   * @returns {Promise<(Campaign & { id: number })[]>} Array of all campaigns with their IDs
    */
-  async getAllCampaigns(): Promise<Campaign[]> {
+  async getAllCampaigns(): Promise<(Campaign & { id: number })[]> {
     const campaignCount = parseInt(await this.getCampaignCount());
-    const campaigns: Campaign[] = [];
+    const campaigns: (Campaign & { id: number })[] = [];
 
     for (let i = 0; i < campaignCount; i++) {
       const campaign = await this.getCampaignById(i);
-      campaigns.push(campaign);
+      campaigns.push({ ...campaign, id: i });
     }
 
     return campaigns;

@@ -1,5 +1,7 @@
 import { Check, DollarSign, LockKeyhole } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { ethers } from "ethers";
 
 import DotCard from "@/components/mvpblocks/dot-card";
 import { Progress } from "@/components/ui/progress";
@@ -7,10 +9,11 @@ import type { Campaign } from "@/services/carvest";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export function CampaignCard(campaign: Campaign) {
-  const raised = Number(campaign.raisedAmount);
-  const goal = Number(campaign.goal);
-  const progressPercentage = Math.min(100, Math.round((raised / goal) * 100));
+export function CampaignCard({ id, ...campaign }: Campaign & { id: number }) {
+  const navigate = useNavigate();
+  const raised = ethers.formatEther(campaign.raisedAmount);
+  const goal = ethers.formatEther(campaign.goal);
+  const progressPercentage = Math.min(100, Math.round((Number(raised) / Number(goal)) * 100));
 
   return (
     <div>
@@ -29,8 +32,8 @@ export function CampaignCard(campaign: Campaign) {
 
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Raised: <span className="font-medium">${raised.toLocaleString()}</span></span>
-              <span>Goal: <span className="font-medium">${goal.toLocaleString()}</span></span>
+              <span>Raised: <span className="font-medium">${raised}</span></span>
+              <span>Goal: <span className="font-medium">${goal}</span></span>
             </div>
             <Progress value={progressPercentage} className="h-2" />
           </div>
@@ -78,7 +81,11 @@ export function CampaignCard(campaign: Campaign) {
             )}
           </div>
 
-          <Button className="w-full" size="sm">
+          <Button
+            className="w-full"
+            size="sm"
+            onClick={() => navigate(`/campaigns/${id}`)}
+          >
             View Campaign
           </Button>
         </div>

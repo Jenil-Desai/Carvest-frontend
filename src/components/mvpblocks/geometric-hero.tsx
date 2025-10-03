@@ -4,6 +4,7 @@ import { easeInOut, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CampaignFormDialog } from '@/components/global/CampaignFormDialog';
 
 function ElegantShape({
   className,
@@ -73,9 +74,9 @@ function ElegantShape({
 }
 
 export default function HeroGeometric({
-  badge = 'MVPBlocks',
-  title1 = 'Build Faster',
-  title2 = 'Ship Sooner',
+  badge = '100% Decentralized',
+  title1 = 'Transparent Crowdfunding',
+  title2 = 'for Everyone',
 }: {
   badge?: string;
   title1?: string;
@@ -154,11 +155,11 @@ export default function HeroGeometric({
             animate="visible"
             className="border-primary/30 bg-card/50 mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 shadow-sm backdrop-blur-sm md:mb-12"
           >
-            <img
-              src="https://i.postimg.cc/2SRcktkT/Mvpblocks.webp"
-              alt="logo"
-              className="h-6 w-6"
-            />
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 via-rose-600 to-rose-700">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                <path d="M12 2v1M12 21v1M4.2 4.2l.8.8M19 19l.8.8M2 12h1M21 12h1M4.2 19.8l.8-.8M19 5l.8-.8"></path>
+              </svg>
+            </div>
             <span className="text-foreground text-sm font-medium tracking-wide">
               {badge}
             </span>
@@ -193,8 +194,8 @@ export default function HeroGeometric({
             animate="visible"
           >
             <p className="text-muted-foreground mx-auto mb-10 max-w-xl px-4 text-base leading-relaxed sm:text-lg md:text-xl">
-              Raise funds with trust and transparency through
-              Ethereum-powered smart contracts.
+              Fund your dreams with confidence using our blockchain-based crowdfunding platform.
+              Complete transparency, zero intermediaries, and automatic fund distribution.
             </p>
           </motion.div>
 
@@ -205,19 +206,24 @@ export default function HeroGeometric({
             animate="visible"
             className="flex flex-col justify-center gap-4 sm:flex-row"
           >
-            <Button
-              size="lg"
-              className="from-primary shadow-primary/10 hover:from-primary/90 rounded-full border-none bg-gradient-to-r to-primary shadow-md hover:to-primary/90"
-            >
-              Launch Campaign
-              <Rocket className="ml-2 h-4 w-4" />
-            </Button>
+            <CampaignFormDialog>
+              <Button
+                size="lg"
+                className="from-primary shadow-primary/10 hover:from-primary/90 rounded-full border-none bg-gradient-to-r to-primary shadow-md hover:to-primary/90"
+              >
+                Launch Campaign
+                <Rocket className="ml-2 h-4 w-4" />
+              </Button>
+            </CampaignFormDialog>
             <Button
               size="lg"
               variant="outline"
               className="border-primary/30 hover:bg-primary/5 rounded-full shadow-sm"
+              asChild
             >
-              Browse Campaigns
+              <a href="/campaigns">
+                Browse Campaigns
+              </a>
             </Button>
           </motion.div>
         </div>
