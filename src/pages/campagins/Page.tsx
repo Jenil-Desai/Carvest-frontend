@@ -1,10 +1,11 @@
-import { CampaignCard } from "@/components/global/CampaignCard";
+import { useState } from "react";
+import { toast } from "sonner";
+
 import ModifiedClassicLoader from "@/components/mvpblocks/modified-classic-loader";
+import { CampaignCard } from "@/components/global/CampaignCard";
 import { TextReveal } from "@/components/ui/text-reveal";
 import { cn } from "@/lib/utils";
 import cravestService, { type Campaign } from "@/services/carvest";
-import { useState } from "react";
-import { toast } from "sonner";
 
 export function Campagins() {
   const [campaigns, setCampaigns] = useState<Campaign[] | []>([]);

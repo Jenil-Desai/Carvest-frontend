@@ -13,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/campaigns" element={<Campagins />} />
+        <Route path="/campaigns/my" element={<Campagins />} />
       </Routes>
       <FooterGlow />
     </BrowserRouter>
